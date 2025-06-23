@@ -1,0 +1,74 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on",
+				"recommended": true,
+				"useSortedAttributes": "on",
+				"useSortedKeys": "on",
+				"useSortedProperties": "on"
+			}
+		},
+		"enabled": true
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"includes": [
+			"**/*.js",
+			"**/*.ts",
+			"**/*.jsx",
+			"**/*.tsx",
+			"**/*.json",
+			"**/*.md"
+		]
+	},
+	"formatter": {
+		"bracketSameLine": false,
+		"enabled": true,
+		"indentStyle": "space",
+		"indentWidth": 2,
+		"lineWidth": 100
+	},
+	"javascript": {
+		"assist": {
+			"enabled": true
+		},
+		"formatter": {
+			"arrowParentheses": "asNeeded",
+			"enabled": true,
+			"indentStyle": "space",
+			"indentWidth": 2,
+			"jsxQuoteStyle": "single",
+			"quoteProperties": "asNeeded",
+			"quoteStyle": "single",
+			"semicolons": "asNeeded",
+			"trailingCommas": "all"
+		},
+		"linter": {
+			"enabled": true
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"a11y": "on",
+			"complexity": "on",
+			"correctness": "on",
+			"nursery": "on",
+			"performance": "on",
+			"recommended": true,
+			"security": "on",
+			"style": "on",
+			"suspicious": "on"
+		}
+	},
+	"root": true,
+	"vcs": {
+		"clientKind": "git",
+		"defaultBranch": "main",
+		"enabled": true,
+		"root": "./src",
+		"useIgnoreFile": true
+	}
+}
