@@ -29,7 +29,7 @@ function rgbToHsl(hex: number) {
     }
     h *= 60
   }
-  return { h, s, l }
+  return { h, l, s }
 }
 
 function getMainColorName(h: number, s: number, l: number) {
@@ -62,24 +62,24 @@ function ColorSwatch({
   const hexStr = `#${color.hex.toString(16).padStart(6, '0')}`
   return (
     <button
-      type='button'
       aria-label={color.name}
-      style={{
-        width: 28,
-        height: 28,
-        borderRadius: 6,
-        background: hexStr,
-        border: '1px solid #ccc',
-        boxShadow: '0 1px 2px #0001',
-        cursor: 'pointer',
-        transition: 'box-shadow 0.2s, border 0.2s',
-        padding: 0,
-        outline: 'none',
-      }}
+      onBlur={onBlur}
+      onFocus={onFocus}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
-      onFocus={onFocus}
-      onBlur={onBlur}
+      style={{
+        background: hexStr,
+        border: '1px solid #ccc',
+        borderRadius: 6,
+        boxShadow: '0 1px 2px #0001',
+        cursor: 'pointer',
+        height: 28,
+        outline: 'none',
+        padding: 0,
+        transition: 'box-shadow 0.2s, border 0.2s',
+        width: 28,
+      }}
+      type='button'
     />
   )
 }
@@ -94,35 +94,35 @@ function ColorTooltip({
   if (!anchorRect) return null
   const hexStr = `#${color.hex.toString(16).padStart(6, '0')}`
   const style: JSX.CSSProperties = {
-    position: 'fixed',
-    left: anchorRect.left + anchorRect.width / 2,
-    top: anchorRect.top - 12,
-    transform: 'translate(-50%, -100%)',
-    zIndex: 1000,
-    pointerEvents: 'none',
+    alignItems: 'center',
     background: '#fff',
     border: '1px solid #ccc',
     borderRadius: 8,
     boxShadow: '0 4px 16px #0002',
-    padding: 12,
-    minWidth: 120,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    gap: 6,
     fontSize: 15,
+    gap: 6,
+    left: anchorRect.left + anchorRect.width / 2,
+    minWidth: 120,
+    padding: 12,
+    pointerEvents: 'none',
+    position: 'fixed',
+    top: anchorRect.top - 12,
+    transform: 'translate(-50%, -100%)',
+    zIndex: 1000,
   }
   return (
     <div style={style}>
       <div
         style={{
-          width: 56,
-          height: 56,
-          borderRadius: 8,
           background: hexStr,
           border: '1px solid #bbb',
-          marginBottom: 6,
+          borderRadius: 8,
           boxShadow: '0 2px 8px #0001',
+          height: 56,
+          marginBottom: 6,
+          width: 56,
         }}
       />
       <div style={{ fontWeight: 600 }}>{color.name}</div>
@@ -168,24 +168,24 @@ function AspectBox({ ratio }: { ratio: string }) {
   const boxW = aspect >= 1 ? w : w * aspect
   const boxH = aspect < 1 ? h : h / aspect
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+    <div style={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: 2 }}>
       <div
         style={{
-          width: boxW,
-          height: boxH,
+          alignItems: 'center',
           background: '#e3e3e3',
           border: '2px solid #888',
           borderRadius: 6,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 12,
           color: '#444',
+          display: 'flex',
+          fontSize: 12,
+          height: boxH,
+          justifyContent: 'center',
+          width: boxW,
         }}
       >
         {ratio}
       </div>
-      <div style={{ fontSize: 12, color: '#666' }}>
+      <div style={{ color: '#666', fontSize: 12 }}>
         {value === undefined
           ? 'undefined'
           : value === Number.POSITIVE_INFINITY
@@ -228,32 +228,32 @@ export default function ColorDef() {
       <h3>Named Color Distribution</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         {MAIN_COLORS.map((main, row) => (
-          <div key={main} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 70, textAlign: 'right', fontWeight: 600 }}>{main}</div>
+          <div key={main} style={{ alignItems: 'center', display: 'flex', gap: 12 }}>
+            <div style={{ fontWeight: 600, textAlign: 'right', width: 70 }}>{main}</div>
             <div style={{ display: 'flex', gap: 2 }}>
               {colorRows[row].map((color, col) => (
                 <div key={color.name} style={{ position: 'relative' }}>
                   <ColorSwatch
                     color={color}
+                    onBlur={() => {
+                      setHovered(null)
+                      setAnchorRect(null)
+                    }}
+                    onFocus={e => {
+                      setHovered({ col, row })
+                      setAnchorRect(e.currentTarget.getBoundingClientRect())
+                    }}
                     onHover={e => {
-                      setHovered({ row, col })
+                      setHovered({ col, row })
                       setAnchorRect(e.currentTarget.getBoundingClientRect())
                     }}
                     onLeave={() => {
                       setHovered(null)
                       setAnchorRect(null)
                     }}
-                    onFocus={e => {
-                      setHovered({ row, col })
-                      setAnchorRect(e.currentTarget.getBoundingClientRect())
-                    }}
-                    onBlur={() => {
-                      setHovered(null)
-                      setAnchorRect(null)
-                    }}
                   />
                   {hovered && hovered.row === row && hovered.col === col && (
-                    <ColorTooltip color={color} anchorRect={anchorRect} />
+                    <ColorTooltip anchorRect={anchorRect} color={color} />
                   )}
                 </div>
               ))}

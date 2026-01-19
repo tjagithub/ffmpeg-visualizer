@@ -62,47 +62,47 @@ export default function TimeDuration() {
   return (
     <div
       style={{
-        display: 'flex',
         alignItems: 'flex-start',
-        gap: 18,
-        padding: 8,
+        background: '#fafbfc',
         border: '1px solid #eee',
         borderRadius: 10,
-        background: '#fafbfc',
+        display: 'flex',
+        gap: 18,
         maxWidth: 520,
+        padding: 8,
       }}
     >
       <div style={{ flex: 1 }}>
         <label
-          style={{ fontWeight: 600, fontSize: 15, marginBottom: 4, display: 'block' }}
           for='ffmpeg-time-input'
+          style={{ display: 'block', fontSize: 15, fontWeight: 600, marginBottom: 4 }}
         >
           FFmpeg Time Duration
         </label>
         <input
           id='ffmpeg-time-input'
-          type='text'
-          placeholder='e.g. 12:03:45, 200ms, 23.189'
-          value={input}
           onInput={e => setInput((e.target as HTMLInputElement).value)}
+          placeholder='e.g. 12:03:45, 200ms, 23.189'
           style={{
-            width: '100%',
-            fontSize: 16,
-            padding: 6,
-            borderRadius: 6,
             border: '1px solid #bbb',
+            borderRadius: 6,
+            fontSize: 16,
             marginBottom: 6,
+            padding: 6,
+            width: '100%',
           }}
+          type='text'
+          value={input}
         />
         <div
           style={{
-            marginTop: 8,
-            color: '#666',
-            fontSize: 13,
             background: '#f5f6fa',
             borderRadius: 6,
-            padding: 8,
             boxShadow: '0 1px 2px #0001',
+            color: 'var(--color-text-secondary)',
+            fontSize: 13,
+            marginTop: 8,
+            padding: 8,
           }}
         >
           Examples:
@@ -122,24 +122,36 @@ export default function TimeDuration() {
       </div>
       <div
         style={{
-          minWidth: 180,
+          alignItems: 'flex-start',
           background: '#fff',
           border: '1px solid #e0e0e0',
           borderRadius: 8,
-          padding: 14,
           boxShadow: '0 2px 8px #0001',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'flex-start',
           gap: 6,
+          minWidth: 180,
+          padding: 14,
         }}
       >
-        <div style={{ fontSize: 13, color: '#888' }}>Parsed (seconds):</div>
-        <div style={{ fontWeight: 600, fontSize: 18, color: parsed !== null ? '#1a3' : '#c00' }}>
+        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>Parsed (seconds):</div>
+        <div
+          style={{
+            color: parsed !== null ? 'var(--color-accent)' : 'var(--color-secondary)',
+            fontSize: 18,
+            fontWeight: 600,
+          }}
+        >
           {input ? (parsed !== null ? parsed : 'Invalid') : '—'}
         </div>
-        <div style={{ fontSize: 13, color: '#888' }}>Formatted:</div>
-        <div style={{ fontWeight: 600, fontSize: 16, color: parsed !== null ? '#135' : '#c00' }}>
+        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>Formatted:</div>
+        <div
+          style={{
+            color: parsed !== null ? 'var(--color-primary)' : 'var(--color-secondary)',
+            fontSize: 16,
+            fontWeight: 600,
+          }}
+        >
           {input && parsed !== null ? formatDuration(parsed) : '—'}
         </div>
       </div>

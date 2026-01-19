@@ -1,10 +1,9 @@
 use dotenv::dotenv;
-use ffmpeg_next as ffmpeg;
-use image::ImageOutputFormat;
 use std::env;
-use std::sync::Mutex;
-use tauri::State;
 use tauri::{Manager, Theme};
+
+mod websocket;
+use websocket::WebSocketServer;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -13,46 +12,27 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-async fn extract_frame(path: String, time: f64) -> Result<Vec<u8>, String> {
-    ffmpeg::init().map_err(|e| format!("FFmpeg init error: {}", e))?;
-    let mut ictx = ffmpeg::format::input(&path).map_err(|e| format!("Input error: {}", e))?;
-    let stream = ictx
-        .streams()
-        .best(ffmpeg::media::Type::Video)
-        .ok_or("No video stream found")?;
-    let video_stream_index = stream.index();
-    let decoder = ffmpeg::codec::context::Context::from_parameters(stream.parameters())
-        .map_err(|e| format!("Decoder error: {}", e))?
-        .decoder()
-        .video()
-        .map_err(|e| format!("Video decoder error: {}", e))?;
-    let seek_ts = (time * f64::from(stream.time_base().denominator())
-        / f64::from(stream.time_base().numerator())) as i64;
-    ictx.seek(seek_ts, ..seek_ts)
-        .map_err(|e| format!("Seek error: {}", e))?;
-    for (stream, packet) in ictx.packets() {
-        if stream.index() == video_stream_index {
-            let mut decoder = decoder.clone();
-            decoder
-                .send_packet(&packet)
-                .map_err(|e| format!("Send packet error: {}", e))?;
-            let mut frame = ffmpeg::util::frame::video::Video::empty();
-            if decoder.receive_frame(&mut frame).is_ok() {
-                let mut buf = Vec::new();
-                let rgb = image::RgbImage::from_raw(
-                    frame.width(),
-                    frame.height(),
-                    frame.data(0).to_vec(),
-                )
-                .ok_or("Failed to convert frame")?;
-                image::DynamicImage::ImageRgb8(rgb)
-                    .write_to(&mut buf, ImageOutputFormat::Png)
-                    .map_err(|e| format!("Image write error: {}", e))?;
-                return Ok(buf);
+fn start_websocket_server() -> Result<String, String> {
+    let addr = "127.0.0.1:8080";
+    
+    // Spawn the WebSocket server in a background task
+    std::thread::spawn(move || {
+        let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
+        rt.block_on(async {
+            let server = WebSocketServer::new();
+            match server.start(addr).await {
+                Ok(_) => {
+                    // Accept connections
+                    if let Ok(listener) = tokio::net::TcpListener::bind(addr).await {
+                        let _ = WebSocketServer::accept_connections(listener).await;
+                    }
+                }
+                Err(e) => eprintln!("Failed to start WebSocket server: {}", e),
             }
-        }
-    }
-    Err("No frame found at specified time".to_string())
+        });
+    });
+
+    Ok(format!("WebSocket server starting on {}", addr))
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -66,7 +46,7 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, extract_frame])
+        .invoke_handler(tauri::generate_handler![greet, start_websocket_server])
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 // Prevent the window from closing immediately

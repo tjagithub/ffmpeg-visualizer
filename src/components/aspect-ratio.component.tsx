@@ -1,4 +1,16 @@
-import { JSX } from 'preact'
+const ws = new WebSocket('ws://localhost:8080')
+ws.onopen = () => {
+  console.log('WebSocket connection established')
+}
+ws.onmessage = event => {
+  console.log('Received message:', event.data)
+}
+ws.onclose = () => {
+  console.log('WebSocket connection closed')
+}
+ws.onerror = error => {
+  console.error('WebSocket error:', error)
+}
 
 const RATIO_EXAMPLES = [
   '16:9',
@@ -26,39 +38,69 @@ function parseRatio(ratio: string): number | undefined {
 
 function AspectBox({ ratio }: Readonly<{ ratio: string }>) {
   const value = parseRatio(ratio)
-  const w = 64,
-    h = 40
+  const w = 80
+  const h = 50
   let aspect = 1
-  if (value === undefined) aspect = 1
-  else if (value === Number.POSITIVE_INFINITY) aspect = 2.5
-  else if (value < 0) aspect = Math.abs(value)
-  else aspect = value
+  const InfinityAspectRatio = 2.5
+  if (value && value < 0) {
+    aspect = Math.abs(value)
+  } else {
+    switch (value) {
+      case undefined:
+        aspect = 1
+        break
+      case Number.POSITIVE_INFINITY:
+        aspect = InfinityAspectRatio
+        break
+      default:
+        aspect = value
+        break
+    }
+  }
   const boxW = aspect >= 1 ? w : w * aspect
   const boxH = aspect < 1 ? h : h / aspect
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+    <div
+      style={{
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        padding: '8px',
+        borderRadius: '8px',
+        background: 'var(--color-background)',
+        border: '1px solid var(--color-border)',
+        transition: 'all 0.2s',
+      }}
+    >
       <div
         style={{
-          width: boxW,
-          height: boxH,
-          background: '#e3e3e3',
-          border: '2px solid #888',
-          borderRadius: 6,
-          display: 'flex',
           alignItems: 'center',
+          background: 'var(--color-primary)',
+          border: '2px solid var(--color-primary)',
+          borderRadius: '6px',
+          color: 'var(--color-background)',
+          display: 'flex',
+          fontSize: '12px',
+          fontWeight: '600',
+          height: boxH,
           justifyContent: 'center',
-          fontSize: 12,
-          color: '#444',
+          width: boxW,
+          transition: 'all 0.2s',
         }}
       >
         {ratio}
       </div>
-      <div style={{ fontSize: 12, color: '#666' }}>
-        {value === undefined
-          ? 'undefined'
-          : value === Number.POSITIVE_INFINITY
-            ? '∞'
-            : value.toFixed(2)}
+      <div
+        style={{
+          color: 'var(--color-text-secondary)',
+          fontSize: '12px',
+          textAlign: 'center',
+          width: '100%',
+          fontWeight: '500',
+        }}
+      >
+        {value === Number.POSITIVE_INFINITY ? '∞' : value?.toFixed(2)}
       </div>
     </div>
   )
@@ -67,8 +109,27 @@ function AspectBox({ ratio }: Readonly<{ ratio: string }>) {
 export function AspectRatio() {
   return (
     <div>
-      <h3>Aspect Ratio Examples</h3>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
+      <h3
+        style={{
+          color: 'var(--color-text-primary)',
+          fontSize: '20px',
+          fontWeight: '600',
+          margin: '0 0 16px 0',
+        }}
+      >
+        Aspect Ratio Examples
+      </h3>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '16px',
+          padding: '16px',
+          background: 'var(--color-surface)',
+          borderRadius: '8px',
+          border: '1px solid var(--color-border)',
+        }}
+      >
         {RATIO_EXAMPLES.map(ratio => (
           <AspectBox key={ratio} ratio={ratio} />
         ))}

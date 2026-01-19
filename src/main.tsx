@@ -1,4 +1,4 @@
 import { render } from 'preact'
-import App from './App.tsx'
+import { App } from './App.tsx'
 
-render(<App />, document.getElementById('root')!)
+render(<App />, document.getElementById('root') as HTMLElement)

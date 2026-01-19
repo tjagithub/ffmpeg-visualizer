@@ -1,18 +1,10 @@
 {
-  "name": "tauri-app",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri"
-  },
   "dependencies": {
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
-    "preact": "^10.25.1"
+    "preact": "^10.25.1",
+    "preact-router": "^4.1.2",
+    "ts-pattern": "^5.9.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.5",
@@ -21,5 +13,15 @@
     "concurrently": "^9.2.0",
     "typescript": "~5.6.2",
     "vite": "^6.0.3"
-  }
+  },
+  "name": "tauri-app",
+  "private": true,
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "type": "module",
+  "version": "0.1.0"
 }
