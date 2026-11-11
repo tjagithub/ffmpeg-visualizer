@@ -45,3 +45,6 @@ Thumbs.db
 
 # Misc
 pnpm-lock.yaml
+
+# Local FFmpeg builds
+bin/

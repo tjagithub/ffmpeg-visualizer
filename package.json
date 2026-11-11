@@ -1,7 +1,5 @@
 {
   "dependencies": {
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2",
     "preact": "^10.25.1",
     "preact-router": "^4.1.2",
     "ts-pattern": "^5.9.0"
@@ -9,18 +7,16 @@
   "devDependencies": {
     "@biomejs/biome": "^2.0.5",
     "@preact/preset-vite": "^2.9.3",
-    "@tauri-apps/cli": "^2",
     "concurrently": "^9.2.0",
     "typescript": "~5.6.2",
     "vite": "^6.0.3"
   },
-  "name": "tauri-app",
+  "name": "ffmpeg-visualizer",
   "private": true,
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",
-    "preview": "vite preview",
-    "tauri": "tauri"
+    "preview": "vite preview"
   },
   "type": "module",
   "version": "0.1.0"
